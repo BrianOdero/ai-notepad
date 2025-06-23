@@ -3,6 +3,7 @@ import LottieView from 'lottie-react-native'
 import { useState, useEffect } from "react";
 import { getSupabase } from "@/utils/supabase"; // Import the getter function
 import { loginSignupStyle } from "@/styles/styles";
+import { useRouter } from "expo-router";
 
 export default function LoginSignup() {
   const [email, setEmail] = useState<string>("");
@@ -13,23 +14,14 @@ export default function LoginSignup() {
   const [loading, setLoading] = useState(false);
   const [isClient, setIsClient] = useState(false); // Track client-side status
 
+  const router = useRouter()
+
   const styles = loginSignupStyle();
   // Check if we're on client-side
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  const logInsert = async () => {
-    const supabase = getSupabase(); // Get client instance
-    const { data, error } = await supabase
-      .from('loginLogs')
-      .insert({ user_email: email })
-      .select()
-      .single();
-
-    if (data) console.log('User data inserted into loginLogs:', data);
-    if (error) console.log(error);
-  }
 
   const login = async () => {
     const supabase = getSupabase(); // Get client instance
@@ -42,9 +34,9 @@ export default function LoginSignup() {
       setPassword("");
     } else {
       Alert.alert("Login Successful");
-      logInsert();
       setEmail("");
       setPassword("");
+      router.push("/(auth)/homepage")
     }
     setLoading(false);
   }
